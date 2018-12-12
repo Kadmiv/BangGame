@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BangGame</string>
+    <string name="BROADCAST_ACTION">BROADCAST_ACTION</string>
+    <string name="EXTRA_STATUS">EXTRA_STATUS</string>
+    <string name="STATUS_OK">STATUS_OK</string>
+    <string name="STATUS_NOK">STATUS_NOK</string>
+    <string name="STATUS_RELOAD">RELOAD</string>
+    <string name="EXTRA_CONNECTION_RESULT">EXTRA_CONNECTION_RESULT</string>
+    <string name="true_request">
+        https://raw.githubusercontent.com/Kadmiv/BangGame/master/true_response.json
+    </string>
+    <string name="false_request">
+        https://raw.githubusercontent.com/Kadmiv/BangGame/master/false_response.json
+    </string>
+    <string name="check_internet">Please, check your internet connection</string>
+    <string name="try_again">Try again</string>
+
+</resources>
