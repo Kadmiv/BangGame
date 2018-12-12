@@ -4,13 +4,17 @@ import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.multidex.MultiDex;
+import android.support.multidex.MultiDexApplication;
 
-public class App extends Application {
+public class App extends MultiDexApplication {
 
     @Override
     public void onCreate() {
+        MultiDex.install(getApplicationContext());
         super.onCreate();
     }
+
 
     //Check internet connection
     public static boolean hasConnection(final Context context) {

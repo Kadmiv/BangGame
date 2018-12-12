@@ -1,6 +1,7 @@
 package com.kadmiv.game.rest;
 
 import com.gaijin.game.android.dataclasses.ServerResponse;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -22,6 +23,7 @@ public interface ServerAPI {
                 // Init REST API
                 Retrofit retrofit = new Retrofit.Builder()
                         .addConverterFactory(GsonConverterFactory.create())
+                        .baseUrl("https://html5test.com/")
                         .build();
                 api = retrofit.create(ServerAPI.class);
                 return api;

@@ -3,25 +3,14 @@ package com.kadmiv.game.services;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
-import com.gaijin.game.android.R;
-import com.gaijin.game.android.dataclasses.ServerResponse;
-import com.gaijin.game.android.rest.ServerAPI;
-import com.google.gson.Gson;
 
-import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
+import com.gaijin.game.android.dataclasses.ServerResponse;
+import com.kadmiv.game.R;
+import com.kadmiv.game.rest.ServerAPI;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import java.io.*;
-
-import static java.lang.Thread.sleep;
 
 public class LoadAnswerService extends Service {
 
@@ -49,6 +38,7 @@ public class LoadAnswerService extends Service {
             request = getString(R.string.false_request);
         }
         // Send request and get answer. Receive answer to main activity
+        serverApi = ServerAPI.Factory.getInstance();
         serverApi.connectToServer(request).enqueue(new Callback<ServerResponse>() {
             @Override
             public void onResponse(Call<ServerResponse> call, Response<ServerResponse> response) {

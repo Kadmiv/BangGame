@@ -4,11 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.kadmiv.game.fragments.ErrorFragment;
 import com.kadmiv.game.fragments.InProcessFragment;
@@ -18,20 +20,31 @@ import com.kadmiv.game.services.LoadAnswerService;
 public class FirstActivity extends AppCompatActivity {
     LoaderDBReceiver loaderReceiver;
     FragmentManager fragmentManager;
+    // This Preferences contain of server answer
+    SharedPreferences savedServerAnswer;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         fragmentManager = getSupportFragmentManager();
-
-        registerReceiver();
-        loadData();
     }
 
     protected void onStart() {
         super.onStart();
-        registerReceiver();
+
+        // If server answer is empty - then load info from server
+        savedServerAnswer = getSharedPreferences(getString(R.string.EXTRA_SERVER_ANSWER), Context.MODE_PRIVATE);
+        String response = savedServerAnswer.getString(getString(R.string.EXTRA_SERVER_ANSWER), "");
+        if (response == "") {
+            Log.d("12", "Response is empty");
+            registerReceiver();
+            loadData();
+            return;
+        }
+        Log.d("12", "Response is not empty");
+        // Else do something depending on the answer
+        doWithResponse(response);
     }
 
     protected void onStop() {
@@ -84,9 +97,8 @@ public class FirstActivity extends AppCompatActivity {
             switch (status) {
                 case "STATUS_OK":
                     unregisterLoaderReceiver(loaderReceiver);
-                    WebFragment countryFragment = new WebFragment();
                     response = intent.getStringExtra(getString(R.string.EXTRA_CONNECTION_RESULT));
-                    replaceFragment(countryFragment);
+                    doWithResponse(response);
                     break;
                 case "STATUS_NOK":
                     response = intent.getStringExtra(getString(R.string.EXTRA_CONNECTION_RESULT));
@@ -98,6 +110,31 @@ public class FirstActivity extends AppCompatActivity {
                     loadData();
                     break;
             }
+        }
+    }
+
+    //This function load specific part of program depending on the answer of server
+    private void doWithResponse(String response) {
+
+        // Save server answer
+        SharedPreferences.Editor editor = savedServerAnswer.edit();
+        editor.putString(getString(R.string.EXTRA_SERVER_ANSWER), response);
+        editor.apply();
+
+        switch (response) {
+            // Load game
+            case "true":
+                Intent gameIntent = new Intent(getApplicationContext(), AndroidLauncher.class);
+                startActivity(gameIntent);
+                break;
+            // Load site html5test
+            case "false":
+                WebFragment countryFragment = new WebFragment();
+                replaceFragment(countryFragment);
+                break;
+            default: // For just case
+                registerReceiver();
+                loadData();
         }
     }
 
