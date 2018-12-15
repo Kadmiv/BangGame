@@ -34,9 +34,9 @@ public class LoadAnswerService extends Service {
 
         String request = getString(R.string.true_request);
         // Set random request
-        if (Math.random() > 0.5) {
-            request = getString(R.string.false_request);
-        }
+//        if (Math.random() > 0.5) {
+//            request = getString(R.string.false_request);
+//        }
         // Send request and get answer. Receive answer to main activity
         serverApi = ServerAPI.Factory.getInstance();
         serverApi.connectToServer(request).enqueue(new Callback<ServerResponse>() {
@@ -59,18 +59,6 @@ public class LoadAnswerService extends Service {
                 t.getStackTrace();
             }
         });
-
-//        Observable.just("Http Connection")
-//                .map(new Function<String, Object>() {
-//                    @Override
-//                    public Object apply(String s) throws Exception {
-//                        loadCountriesAndCities();
-//                        return new Object();
-//                    }
-//                })
-//                .subscribeOn(Schedulers.newThread())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe();
 
         return super.onStartCommand(intent, flags, startId);
     }

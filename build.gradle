@@ -88,21 +88,6 @@ project(":android") {
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-arm64-v8a"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86"
         natives "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-x86_64"
-        implementation "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
-        natives "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-armeabi"
-        natives "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-armeabi-v7a"
-        natives "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-arm64-v8a"
-        natives "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-x86"
-        natives "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-x86_64"
-        implementation "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
-        implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi"
-        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-armeabi-v7a"
-        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-arm64-v8a"
-        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86"
-        natives "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-x86_64"
-        implementation "com.badlogicgames.ashley:ashley:$ashleyVersion"
-        implementation "com.badlogicgames.gdx:gdx-ai:$aiVersion"
         // Kotlin
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
         // Design
@@ -116,10 +101,6 @@ project(":android") {
 //        implementation "io.realm:realm-annotations:$realm_version"
 //        kapt "io.realm:realm-annotations:$realm_version"
 //        kapt "io.realm:realm-annotations-processor:$realm_version"
-        //RX
-        implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
-        implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
-        implementation 'io.reactivex.rxjava2:rxkotlin:2.3.0'
         // REST
         implementation 'com.squareup.retrofit2:retrofit:2.5.0'
         implementation 'com.squareup.retrofit2:converter-gson:2.5.0'
