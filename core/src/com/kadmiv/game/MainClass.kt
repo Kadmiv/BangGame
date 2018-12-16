@@ -7,9 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.kadmiv.game.controll.Controller
 import com.kadmiv.game.groups.BattleField
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.Sprite
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.utils.viewport.FitViewport
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Animation
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.kadmiv.game.actors.AnimatedActor
+import com.kadmiv.game.actors.AnimationLoader
+import com.kadmiv.game.actors.Player
+import com.kadmiv.game.actors.RandomTimer
 
 
 class MainClass : InputAdapter(), ApplicationListener {
@@ -38,15 +42,20 @@ class MainClass : InputAdapter(), ApplicationListener {
         mainStage = Stage()
         battleField = BattleField(screenWidth, screenHeight)
         mainStage.addActor(battleField)
-
-        Gdx.input.inputProcessor = Controller(battleField)
+        // Set game controller
+        var controller = Controller(battleField);
+        Gdx.input.inputProcessor = controller
+        // Set random game timer
+        var timer = RandomTimer()
+        timer.registerCallBack(controller)
+        timer.start()
     }
 
     override fun render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 //        camera.update();
         mainStage.draw()
-        mainStage.act(Gdx.graphics.deltaTime)
+//        mainStage.act(Gdx.graphics.deltaTime)
     }
 
     override fun pause() {}

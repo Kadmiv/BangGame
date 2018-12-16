@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 
 open class MainActor(texturePNG: String) : Actor() {
-    var texture: Texture = Texture(texturePNG)
+    open var texture: Texture = Texture(texturePNG)
     var textureRegion = TextureRegion(texture)
 
     init {

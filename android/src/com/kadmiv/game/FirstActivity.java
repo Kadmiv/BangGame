@@ -103,7 +103,7 @@ public class FirstActivity extends AppCompatActivity {
                 case "STATUS_NOK":
                     response = intent.getStringExtra(getString(R.string.EXTRA_CONNECTION_RESULT));
                     ErrorFragment errorFragment = new ErrorFragment();
-                    errorFragment.setErrorText("Error! $response");
+                    errorFragment.setErrorText("Error! " + response);
                     replaceFragment(errorFragment);
                     break;
                 case "RELOAD":
