@@ -8,6 +8,10 @@ import com.gaijin.game.android.dataclasses.ServerResponse;
 import com.kadmiv.game.R;
 import com.kadmiv.game.rest.ServerAPI;
 
+import io.reactivex.Observable;
+import io.reactivex.Scheduler;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

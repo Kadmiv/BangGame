@@ -7,6 +7,11 @@ import com.kadmiv.game.controll.RandomTimer
 import com.kadmiv.game.model.RuntimeRepo
 import java.lang.Thread.sleep
 import com.badlogic.gdx.scenes.scene2d.*
+import com.kadmiv.game.screens.StartScreen
+import io.reactivex.Observable
+import io.reactivex.functions.Function
+import io.reactivex.schedulers.Schedulers
+import java.util.concurrent.TimeUnit
 
 
 class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), RandomTimer.TimeCallBack {
@@ -23,7 +28,7 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
     val MAX_WIN_NUM = 2
 
     open interface RoundCallBack {
-        fun getNextRound(score: Int, player: PlayerField)
+        fun getNextRound()
         fun getNewGame()
     }
 
@@ -116,7 +121,6 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                     player.toNextAnimation(RuntimeRepo.getAnimation(player, "missed_too"), Animation.PlayMode.LOOP)
                     anotherPlayer.animation = RuntimeRepo.getAnimation(player, "nothing_happened")
                     timer.stop()
-                    roundCallBack.getNextRound(playerScore, this)
                 }
             } else {
                 // Set time of touch
@@ -138,7 +142,7 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                         // Increment wins
                         playerScore++
                     }
-                    roundCallBack.getNextRound(playerScore, this)
+
                 }
             }
 
@@ -155,9 +159,13 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                     sleep(4000)
                     roundCallBack.getNewGame()
                 }).start()
+
+            }else{
+                roundCallBack.getNextRound()
             }
         }
     }
+
 
     override fun ready() {
         System.out.println("Say ready")
@@ -182,3 +190,4 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
     }
 
 }
+

@@ -48,6 +48,14 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
             screen.secondStartButton -> {
                 deleteButton(screen.secondStartButton)
             }
+            screen.exitButton -> {
+                exitFromGame()
+                System.out.println("Exit")
+            }
+            screen.newGameButton -> {
+                setNewBattle()
+                System.out.println("New battel")
+            }
             // Player shoots
             screen.firstPlayerField -> {
                 System.out.println("Bang if First player")
@@ -62,21 +70,27 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
     }
 
     private fun deleteButton(button: Button) {
-        getStart()
-        button.remove()
-        GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
 
-        // For just case - I have some bug with this
-        screen.firstPlayerField.haveBullet = true
-        screen.secondPlayerField.haveBullet = true
+        button.remove()
 
         when (button) {
             screen.firstStartButton -> {
                 screen.firstPlayerField.playerStart()
+                GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
+                // For just case - I have some bug with this
+                screen.firstPlayerField.haveBullet = true
+                screen.secondPlayerField.haveBullet = true
+                getStart()
 
             }
             screen.secondStartButton -> {
                 screen.secondPlayerField.playerStart()
+                GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
+
+                // For just case - I have some bug with this
+                screen.firstPlayerField.haveBullet = true
+                screen.secondPlayerField.haveBullet = true
+                getStart()
             }
         }
 
@@ -107,7 +121,7 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
         playSound(RuntimeRepo.audioRepo["finish_him"]!!);
     }
 
-    override fun getNextRound(score: Int, player: PlayerField) {
+    override fun getNextRound() {
         System.out.println("1P : ${screen.firstPlayerField.playerScore} 2P : ${screen.secondPlayerField.playerScore}")
         System.out.println("Next round")
         Thread(Runnable {
@@ -120,10 +134,26 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
     }
 
     override fun getNewGame() {
+//        Thread(Runnable {
+        screen.mainStage.addActor(screen.newGameButton)
+        screen.mainStage.addActor(screen.exitButton)
+//        }).start()
+    }
+
+    private fun setNewBattle() {
+        GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
         screen.dispose()
-        var mainScreen = StartScreen(screen.game)
-        screen.game.screen = mainScreen;
-        System.out.println("Start screen created")
+        var startScreen = GameScreen(screen.game, playersCount)
+        screen.game.setScreen(startScreen);
+        System.out.println("Start screen screen created ")
+    }
+
+    private fun exitFromGame() {
+        GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
+        screen.dispose()
+        var startScreen = StartScreen(screen.game)
+        screen.game.setScreen(startScreen);
+        System.out.println("Start screen screen created ")
     }
 
 }

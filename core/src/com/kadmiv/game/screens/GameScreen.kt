@@ -21,8 +21,11 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
     lateinit var mainStage: Stage
     lateinit var firstPlayerField: PlayerField
     lateinit var secondPlayerField: PlayerField
+
     lateinit var firstStartButton: Button
     lateinit var secondStartButton: Button
+    lateinit var newGameButton: Button
+    lateinit var exitButton: Button
     var timer = RandomTimer.Factory.instance()!!
 
     init {
@@ -57,7 +60,6 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
 
         // Add Start first player button
         firstStartButton = Button(RuntimeRepo.textureRepo["button"]!!, "Start")
-        firstStartButton.setOrigin(Align.center)
         firstStartButton.setToCentre(firstPlayerField.width / 2, firstPlayerField.height / 4)
         mainStage.addActor(firstStartButton)
 
@@ -74,6 +76,14 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
         mainStage.addListener(controller)
         Gdx.input.inputProcessor = mainStage
         Gdx.input.isCatchBackKey = true;
+
+        // Add Start first player button
+        newGameButton = Button(RuntimeRepo.textureRepo["button"]!!, "New Game")
+        newGameButton.setToCentre(screenWidth - firstPlayerField.width / 4, firstPlayerField.height / 2)
+
+        // Add Start second player button
+        exitButton = Button(RuntimeRepo.textureRepo["button"]!!, "Exit")
+        exitButton.setToCentre(secondPlayerField.width / 4, secondPlayerField.height / 2)
 
     }
 
