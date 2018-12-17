@@ -139,10 +139,7 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                     player.toNextAnimation(winAnimation, Animation.PlayMode.LOOP)
 
                     // To Start menu
-                    Thread(Runnable {
-                        sleep(4000)
-                        roundCallBack.getNewGame()
-                    }).start()
+                    roundCallBack.getNewGame()
 
                 } else {
                     roundCallBack.getNextRound()

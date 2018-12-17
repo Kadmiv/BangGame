@@ -2,7 +2,9 @@ package com.kadmiv.game.controll
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.scenes.scene2d.*
+import com.kadmiv.game.model.RuntimeRepo
 import com.kadmiv.game.screens.GameScreen
 import com.kadmiv.game.screens.StartScreen
 import io.reactivex.internal.disposables.DisposableHelper.dispose
@@ -10,6 +12,12 @@ import io.reactivex.internal.disposables.DisposableHelper.dispose
 class StartScreenController(screen: StartScreen) : InputListener() {
 
     var screen = screen
+
+    companion object {
+        fun playSound(sound: Sound) {
+            sound.play()
+        }
+    }
 
     override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
 
@@ -19,6 +27,7 @@ class StartScreenController(screen: StartScreen) : InputListener() {
 
         when (screenPart) {
             screen.startButton -> {
+                StartScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
                 screen.dispose()
                 var gameScreen = GameScreen(screen.game, 2)
                 screen.game.setScreen(gameScreen);
@@ -30,7 +39,10 @@ class StartScreenController(screen: StartScreen) : InputListener() {
 
     override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
         if (keycode == Input.Keys.BACK) {
+            screen.dispose()
             Gdx.app.exit()
+            System.exit(0)
+            System.out.println("Back key pressed")
         }
         return false
     }

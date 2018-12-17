@@ -28,6 +28,8 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
     lateinit var firstScore: Button
     lateinit var secondScore: Button
 
+    lateinit var commandsView: Button
+
     lateinit var newGameButton: Button
     lateinit var exitButton: Button
 
@@ -92,6 +94,10 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
         secondScore.setToCentre(secondPlayerField.x + secondScore.width, screenHeight / 2)
         secondScore.setOrigin(Align.center)
         secondScore.rotation = 180F
+
+        // Create of game commands
+        commandsView = Button(RuntimeRepo.textureRepo["command_background"]!!, "Steady")
+        commandsView.setToCentre(screenWidth / 2, screenHeight / 2)
 
         // Initialization of game controller
         var controller = GameScreenController(this);

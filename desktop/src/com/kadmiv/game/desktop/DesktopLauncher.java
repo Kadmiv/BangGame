@@ -10,7 +10,7 @@ public class DesktopLauncher {
     public static void main(String[] arg) {
 
         RepoCollector collector = new RepoCollector();
-        collector.scanAllFiles("F:\\Projects\\Kotlin\\BangGame\\android\\assets\\sounds");
+        collector.scanAllFiles("F:\\Projects\\BangGame\\android\\assets\\sounds");
 
         LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
         float div = 1.2f;

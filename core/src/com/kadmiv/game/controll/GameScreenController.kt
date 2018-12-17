@@ -4,7 +4,6 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.scenes.scene2d.*
 import com.kadmiv.game.model.RuntimeRepo
-import com.kadmiv.game.model.actors.Button
 import com.kadmiv.game.model.groups.PlayerField.RoundCallBack
 import com.kadmiv.game.screens.GameScreen
 import com.kadmiv.game.screens.StartScreen
@@ -133,10 +132,11 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
     }
 
     override fun getNewGame() {
-//        Thread(Runnable {
-        screen.mainStage.addActor(screen.newGameButton)
-        screen.mainStage.addActor(screen.exitButton)
-//        }).start()
+        Thread(Runnable {
+            sleep(4000)
+            screen.mainStage.addActor(screen.newGameButton)
+            screen.mainStage.addActor(screen.exitButton)
+        }).start()
     }
 
     private fun setNewBattle() {
@@ -156,15 +156,25 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
     }
 
     override fun ready() {
-        playSound(RuntimeRepo.audioRepo["ready"]!!);
+        setCommand("Ready")
     }
 
     override fun steady() {
-        playSound(RuntimeRepo.audioRepo["steady"]!!);
+        setCommand("Steady")
     }
 
     override fun bang() {
-        playSound(RuntimeRepo.audioRepo["finish_him"]!!);
+        setCommand("BANG")
+    }
+
+    private fun setCommand(command: String) {
+        playSound(RuntimeRepo.audioRepo[command.toLowerCase()]!!)
+        Thread(Runnable {
+            screen.commandsView.textView.setText(command)
+            screen.mainStage.addActor(screen.commandsView)
+            sleep(888)
+            deletePart(screen.commandsView)
+        }).start()
     }
 
 }
