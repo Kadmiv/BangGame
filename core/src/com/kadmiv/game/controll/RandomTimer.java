@@ -6,7 +6,7 @@ import static java.lang.Thread.sleep;
 
 public class RandomTimer {
 
-    public interface CallBack {
+    public interface TimeCallBack {
         void ready();
 
         void steady();
@@ -18,13 +18,13 @@ public class RandomTimer {
     final int MAX_STEADY_TIME = 3;
     final int MAX_BANG_TIME = 4;
 
-    ArrayList<CallBack> callBack = new ArrayList<>();
-
     // Bread switch from timer
     private boolean isStoped;
 
-    public void registerCallBack(CallBack callBack) {
-        this.callBack.add(callBack);
+    ArrayList<TimeCallBack> timeCallBack = new ArrayList<>();
+
+    public void registerCallBack(TimeCallBack timeCallBack) {
+        this.timeCallBack.add(timeCallBack);
     }
 
     public void start() {
@@ -56,17 +56,17 @@ public class RandomTimer {
         if (!isStoped) {
             switch (command) {
                 case MAX_READY_TIME:
-                    for (CallBack call : callBack) {
+                    for (TimeCallBack call : timeCallBack) {
                         call.ready();
                     }
                     break;
                 case MAX_STEADY_TIME:
-                    for (CallBack call : callBack) {
+                    for (TimeCallBack call : timeCallBack) {
                         call.steady();
                     }
                     break;
                 case MAX_BANG_TIME:
-                    for (CallBack call : callBack) {
+                    for (TimeCallBack call : timeCallBack) {
                         call.bang();
                     }
                     break;

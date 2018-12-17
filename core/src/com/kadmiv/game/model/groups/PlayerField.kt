@@ -1,19 +1,17 @@
 package com.kadmiv.game.model.groups
 
 import com.badlogic.gdx.graphics.g2d.Animation
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.kadmiv.game.model.actors.*
 import com.kadmiv.game.controll.GameScreenController
 import com.kadmiv.game.controll.RandomTimer
 import com.kadmiv.game.model.RuntimeRepo
 import java.lang.Thread.sleep
+import com.badlogic.gdx.scenes.scene2d.*
 
-class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), RandomTimer.CallBack {
+
+class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), RandomTimer.TimeCallBack {
 
     var player = Player()
-    var bulletHoles: Group = Group()
-    lateinit var startButton: Button
     var timer: RandomTimer = RandomTimer.Factory.instance()
 
     var timeOfTouch: Long = 0
@@ -21,32 +19,37 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
     var mayShoot = false;
     lateinit var touch: PlayerTouch
     var isDeath = false
-    var numberOfWins = 0
+    var playerScore = 0
     val MAX_WIN_NUM = 5
 
+    open interface RoundCallBack {
+        fun getNextRound(score: Int, player: PlayerField)
+    }
+
+    lateinit var roundCallBack: RoundCallBack
+
+    fun registerCallBack(roundCallBack: RoundCallBack) {
+        this.roundCallBack = roundCallBack
+    }
 
     init {
         // Registration CallBacks from Random timer
         timer.registerCallBack(this)
+
         setPosition(x, y)
-        setSize(width, height)
+        setBounds(this.x, this.y, width, height)
+        touchable = Touchable.enabled
 
         // Set player settings
         var animation = RuntimeRepo.getAnimation(Player.ANIM_WIDTH, Player.ANIM_HEIGHT, "ready")
         player.animation = animation
-        player.setRun(true)
+        player.setRun(false)
 
         //Position
         var xPos = width / 2
         var yPos = height / 2
         player.setToCentre(xPos, yPos)
         addActor(player)
-
-        // Add bullet list
-        addActor(bulletHoles)
-
-        startButton = Button(RuntimeRepo.textureRepo["button"]!!, "some")
-        addActor(startButton)
     }
 
     fun flipPlayerX(setFlip: Boolean) {
@@ -66,8 +69,8 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
     }
 
 
-    fun addBulletDot(win: Boolean) {
-
+    fun addBulletDot() {
+        // Random position of bullet dot
         var bulletX = (Math.random() * width).toFloat()
         var bulletY = (Math.random() * player.height).toFloat() + height / 2
 
@@ -75,7 +78,7 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
 
         var playerField = player.hit(bulletX, bulletY, true);
         if (playerField == player) {
-            addBulletDot(win)
+            addBulletDot()
             return
         }
         newBullet.setToCentre(bulletX, bulletY)
@@ -83,10 +86,17 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
         addActor(newBullet)
     }
 
+    fun playerStart() {
+        haveBullet = true
+        // Set player settings
+        var animation = RuntimeRepo.getAnimation(Player.ANIM_WIDTH, Player.ANIM_HEIGHT, "ready")
+        player.animation = animation
+        player.setRun(true)
+    }
 
-    fun getShoot(anotherPlayerField: PlayerField) {
+    fun getShoot(anotherPlayerField: PlayerField, gameWasStart: Boolean) {
         var anotherPlayer = anotherPlayerField.player
-        if (haveBullet) {
+        if (haveBullet && gameWasStart) {
 
             var randomN: Int = Math.ceil(Math.random() * 4).toInt()
 
@@ -95,7 +105,7 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                 GameScreenController.playSound(RuntimeRepo.audioRepo["bullet_$randomN"]!!);
                 player.toNextAnimation(RuntimeRepo.getAnimation(player, "shoot"))
                 sleep(2)
-                anotherPlayerField.addBulletDot(Math.random() > 0.5)
+                anotherPlayerField.addBulletDot()
                 if (anotherPlayerField.haveBullet) {
                     player.toNextAnimation(RuntimeRepo.getAnimation(player, "coward_1"))
                     player.toNextAnimation(RuntimeRepo.getAnimation(player, "coward_2"), Animation.PlayMode.LOOP)
@@ -104,6 +114,7 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                     player.toNextAnimation(RuntimeRepo.getAnimation(player, "missed_too"), Animation.PlayMode.LOOP)
                     anotherPlayer.animation = RuntimeRepo.getAnimation(player, "nothing_happened")
                     timer.stop()
+                    roundCallBack.getNextRound(playerScore, this)
                 }
             } else {
                 // Set time of touch
@@ -113,31 +124,33 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                     // Get Shoot effects
                     GameScreenController.playSound(RuntimeRepo.audioRepo["bullet_$randomN"]!!);
                     player.toNextAnimation(RuntimeRepo.getAnimation(player, "shoot"))
-                    sleep(2)
+                    sleep(3)
                     // Another player has not yet clicked on the screen
                     if (anotherPlayerField.touch.getTimeReaction() < 0) {
                         anotherPlayerField.isDeath = true
+                        // Run animations
                         anotherPlayer.toNextAnimation(RuntimeRepo.getAnimation(player, "death_$randomN"))
-                        GameScreenController.playSound(RuntimeRepo.audioRepo["death_$randomN"]!!);
                         player.toNextAnimation(RuntimeRepo.getAnimation(player, "win_round"))
-
+                        // Run sounds
+                        GameScreenController.playSound(RuntimeRepo.audioRepo["death_$randomN"]!!);
                         // Increment wins
-                        numberOfWins++
+                        playerScore++
                     }
+                    roundCallBack.getNextRound(playerScore, this)
                 }
             }
 
-            // Set animation, if player win all 5 battle
-            if (MAX_WIN_NUM == numberOfWins) {
+            // Run animation and sound, if player to win in all 5 battles
+            if (MAX_WIN_NUM == playerScore) {
+                sleep(250)
                 GameScreenController.playSound(RuntimeRepo.audioRepo["win_all_$randomN"]!!);
                 randomN = Math.ceil(Math.random() * 2).toInt()
                 var winAnimation = RuntimeRepo.getAnimation(player, "win_all_$randomN")
                 winAnimation.playMode = Animation.PlayMode.LOOP
                 player.toNextAnimation(winAnimation)
-
             }
+            haveBullet = false;
         }
-        haveBullet = false;
     }
 
     override fun ready() {

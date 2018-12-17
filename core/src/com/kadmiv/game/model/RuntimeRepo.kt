@@ -7,10 +7,11 @@ import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.google.gson.Gson
+import com.kadmiv.game.controll.RandomTimer
 import com.kadmiv.game.model.repos.Repo
 import com.kadmiv.game.model.repos.RepoFile
 
-class RuntimeRepo() {
+open class RuntimeRepo() {
 
     companion object {
         val audioRepo = HashMap<String, Sound>()
@@ -27,6 +28,7 @@ class RuntimeRepo() {
             return animation
         }
     }
+
 
     init {
         // Load json file, which contain all information for game assets files

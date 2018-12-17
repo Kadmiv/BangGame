@@ -1,9 +1,7 @@
 package com.kadmiv.game.controll
 
 import com.badlogic.gdx.InputAdapter
-import com.kadmiv.game.model.groups.BattleField
 import com.kadmiv.game.screens.StartScreen
-import java.awt.Point
 
 class StartScreenController(startScreen: StartScreen) : InputAdapter() {
 

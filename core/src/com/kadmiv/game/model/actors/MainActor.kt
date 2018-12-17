@@ -9,7 +9,7 @@ open class MainActor(texture: Texture) : Actor() {
     lateinit var textureRegion: TextureRegion
 
     init {
-        setSize(texture.width.toFloat(), texture.height.toFloat())
+        setBounds(this.x, this.y, texture.width.toFloat(), texture.height.toFloat())
         textureRegion = TextureRegion(texture)
     }
 
@@ -29,6 +29,6 @@ open class MainActor(texture: Texture) : Actor() {
 //            System.out.println("Hint in ${this.javaClass}")
             return this
         }
-        return null
+        return super.hit(x, y, touchable)
     }
 }

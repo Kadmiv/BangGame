@@ -21,7 +21,7 @@ class MainClass : Game() {
         RuntimeRepo()
         // Creation of game screens (activity)
         startScreen = StartScreen(this)
-        gameScreen = GameScreen(this)
+        gameScreen = GameScreen(this, 2)
 //        setScreen(startScreen)
         setScreen(gameScreen)
     }

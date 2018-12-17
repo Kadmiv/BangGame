@@ -74,7 +74,7 @@ class StartScreen(game: Game) : InputAdapter(), Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
 //        camera.update();
         mainStage.draw()
-//        mainStage.act(Gdx.graphics.deltaTime)
+//        screen.act(Gdx.graphics.deltaTime)
     }
 
     override fun dispose() {

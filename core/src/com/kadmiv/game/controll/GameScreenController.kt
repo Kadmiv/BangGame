@@ -1,12 +1,19 @@
 package com.kadmiv.game.controll
 
-import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.audio.Sound
+import com.badlogic.gdx.scenes.scene2d.*
 import com.kadmiv.game.model.RuntimeRepo
-import com.kadmiv.game.model.groups.BattleField
-import java.awt.Point
+import com.kadmiv.game.model.actors.Button
+import com.kadmiv.game.model.groups.PlayerField
+import com.kadmiv.game.model.groups.PlayerField.RoundCallBack
+import com.kadmiv.game.screens.GameScreen
+import java.lang.Thread.sleep
 
-class GameScreenController(var battleField: BattleField) : InputAdapter(), RandomTimer.CallBack {
+class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.TimeCallBack, RoundCallBack {
+
+    var screen = screen
+    private var playersReady = 0
+    var playersCount = 0;
 
     companion object {
         fun playSound(sound: Sound) {
@@ -17,45 +24,89 @@ class GameScreenController(var battleField: BattleField) : InputAdapter(), Rando
     var timer = RandomTimer.Factory.instance()!!
 
     init {
-        // Set random game timer
+        // Registration of Random timer callbacks
         timer.registerCallBack(this)
-        timer.start()
+        // Registration of Score timer callbacks
+        screen.firstPlayerField.registerCallBack(this)
+        screen.secondPlayerField.registerCallBack(this)
+
     }
 
 
-    override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+    override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
 
-        // Because Y-axis is rotate
-        var trueScreenY = (battleField.height - screenY).toInt()
 
-        try {
-            var battleFieldPart = battleField.hit(screenX.toFloat(), trueScreenY.toFloat(), true)
-            when (battleFieldPart) {
-                battleField.firstPlayerField.startButton -> {
-                    System.out.println("Bang is First Start Button")
-//                    battleField.secondPlayerField.getShoot(battleField.firstPlayerField, mayShoot)
-                }
-                battleField.firstPlayerField -> {
-                    System.out.println("Bang is First Player")
-                    battleField.firstPlayerField.getShoot(battleField.secondPlayerField)
-                }
+        System.out.println("Point $x, $y")
+        var battleFieldPart = event.target
 
-                battleField.secondPlayerField -> {
-                    System.out.println("Bang is Second Player")
-                    battleField.secondPlayerField.getShoot(battleField.firstPlayerField)
-                }
-                battleField.secondPlayerField.startButton -> {
-                    System.out.println("Bang is Second Start Button")
-//                    battleField.secondPlayerField.getShoot(battleField.firstPlayerField, mayShoot)
-                }
+        when (battleFieldPart) {
+            screen.firstStartButton -> {
+                deleteButton(screen.firstStartButton)
+            }
+            screen.secondStartButton -> {
+                deleteButton(screen.secondStartButton)
+            }
+            screen.firstPlayerField -> {
+                System.out.println("Bang if First player")
+                screen.firstPlayerField.getShoot(screen.secondPlayerField, playersReady >= playersCount)
+            }
+            screen.secondPlayerField -> {
+                System.out.println("Bang is second Player ")
+                screen.secondPlayerField.getShoot(screen.firstPlayerField, playersReady >= playersCount)
+            }
+        }
+//
+//                battleField.secondPlayerField.startButton -> {
+//                    System.out.println("Bang is Second Start Button")
+////                    battleField.secondPlayerField.getShoot(battleField.firstPlayerField, playersReady)
+//                }
+//                battleField.firstPlayerField -> {
+//                    System.out.println("Bang is First Player")
+//                    battleField.firstPlayerField.getShoot(battleField.secondPlayerField)
+//                }
+//
+//                battleField.secondPlayerField -> {
+//                    System.out.println("Bang is Second Player")
+//                    battleField.secondPlayerField.getShoot(battleField.firstPlayerField)
+//                }
+//
+//            }
+//            System.out.println("Point $screenX, $screenY")
+//        } catch (ex: Exception) {
+//            ex.stackTrace
+//        }
+        return true
+    }
+
+    private fun deleteButton(button: Button) {
+        getStart()
+        button.remove()
+        GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
+
+        when (button) {
+            screen.firstStartButton -> {
+                screen.firstPlayerField.playerStart()
 
             }
-            System.out.println("Point $screenX, $screenY")
-        } catch (ex: Exception) {
-            ex.stackTrace
+            screen.secondStartButton -> {
+                screen.secondPlayerField.playerStart()
+            }
         }
-        return super.touchDown(screenX, screenY, pointer, button)
+
     }
+
+    private fun getStart() {
+        playersReady++
+        if (playersReady >= playersCount)
+            timer.start()
+    }
+
+//    override fun keyDown(keycode: Int): Boolean {
+//        if (keycode == Input.Keys.BACK) {
+//            System.out.println("Is Back Button Pressed")
+//        }
+//        return false
+//    }
 
     override fun ready() {
         playSound(RuntimeRepo.audioRepo["ready"]!!);
@@ -67,6 +118,18 @@ class GameScreenController(var battleField: BattleField) : InputAdapter(), Rando
 
     override fun bang() {
         playSound(RuntimeRepo.audioRepo["finish_him"]!!);
+    }
+
+    override fun getNextRound(score: Int, player: PlayerField) {
+        System.out.println("1P : ${screen.firstPlayerField.playerScore} 2P : ${screen.secondPlayerField.playerScore}")
+        System.out.println("Next round")
+        Thread(Runnable {
+            sleep(2000)
+            screen.mainStage.addActor(screen.secondStartButton)
+            screen.mainStage.addActor(screen.firstStartButton)
+        }).start()
+        playersReady = 0
+
     }
 
 }

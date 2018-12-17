@@ -2,16 +2,28 @@ package com.kadmiv.game.screens
 
 import com.badlogic.gdx.*
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.InputListener
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.utils.Align
 import com.kadmiv.game.controll.GameScreenController
-import com.kadmiv.game.model.groups.BattleField
+import com.kadmiv.game.controll.RandomTimer
+import com.kadmiv.game.model.RuntimeRepo
+import com.kadmiv.game.model.actors.Button
+import com.kadmiv.game.model.actors.MainActor
+import com.kadmiv.game.model.groups.PlayerField
 
-class GameScreen(game: Game) : InputAdapter(), Screen {
 
-    lateinit var camera: OrthographicCamera
-    lateinit var battleField: BattleField
+class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
+
     lateinit var mainStage: Stage
+
+    lateinit var firstPlayerField: PlayerField
+    lateinit var secondPlayerField: PlayerField
+    lateinit var firstStartButton: Button
+    lateinit var secondStartButton: Button
+    var timer = RandomTimer.Factory.instance()!!
 
     init {
 
@@ -19,24 +31,60 @@ class GameScreen(game: Game) : InputAdapter(), Screen {
         var screenHeight = Gdx.graphics.height.toFloat();
 
         mainStage = Stage()
-        battleField = BattleField(screenWidth, screenHeight)
-        mainStage.addActor(battleField)
-        // Set game controller
-        var controller = GameScreenController(battleField);
-        Gdx.input.inputProcessor = controller
 
+        var gameBackground = MainActor(RuntimeRepo.textureRepo["game_background"]!!)
+        mainStage.addActor(gameBackground)
+
+        gameBackground.scaleX = screenWidth / gameBackground.width
+        gameBackground.scaleY = screenHeight / gameBackground.height
+
+        var fieldHeight = screenHeight / 2
+        var fieldWidth = screenWidth
+
+        // Add players
+        // Set size and orientation of firs player
+        firstPlayerField = PlayerField(0f, 0f, fieldWidth, fieldHeight);
+        var centreX = firstPlayerField.width / 2
+        var centreY = firstPlayerField.height / 2
+        firstPlayerField.setOrigin(centreX, centreY)
+        firstPlayerField.rotation = 180f
+        firstPlayerField.flipPlayerX(true)
+        mainStage.addActor(firstPlayerField)
+
+        // Set size and orientation of second player
+        secondPlayerField = PlayerField(0f, fieldHeight, fieldWidth, fieldHeight);
+        mainStage.addActor(secondPlayerField)
+
+        // Add Start first player button
+        firstStartButton = Button(RuntimeRepo.textureRepo["button"]!!, "Start")
+        firstStartButton.setOrigin(Align.center)
+        firstStartButton.setToCentre(firstPlayerField.width / 2, firstPlayerField.height / 4)
+        mainStage.addActor(firstStartButton)
+
+        // Add Start second player button
+        secondStartButton = Button(RuntimeRepo.textureRepo["button"]!!, "Start")
+        secondStartButton.setOrigin(Align.center)
+        secondStartButton.setToCentre(secondPlayerField.width / 2, screenHeight - secondPlayerField.height / 4)
+        secondStartButton.rotation = 180F
+        mainStage.addActor(secondStartButton)
+
+        // Initialization of game controller
+        var controller = GameScreenController(this);
+        controller.playersCount = countPlayer
+        mainStage.addListener(controller)
+        Gdx.input.inputProcessor = mainStage
+        Gdx.input.isCatchBackKey = true;
 
     }
 
     override fun render(delta: Float) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
-//        camera.update();
         mainStage.draw()
-//        mainStage.act(Gdx.graphics.deltaTime)
     }
 
     override fun dispose() {
         Gdx.input.inputProcessor = null
+        mainStage.dispose()
     }
 
     override fun pause() {}

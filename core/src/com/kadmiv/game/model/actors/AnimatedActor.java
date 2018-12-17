@@ -51,6 +51,8 @@ public class AnimatedActor extends Actor {
     }
 
     public void setAnimation(Animation<TextureRegion> animation) {
+        TextureRegion region = animation.getKeyFrame(0);
+        setSize(region.getRegionWidth(), region.getRegionHeight());
         _animation = animation;
         _stateTime = 0;
         if (_animation != null) {
