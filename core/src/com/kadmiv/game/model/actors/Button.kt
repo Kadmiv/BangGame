@@ -11,24 +11,29 @@ class Button(texture: Texture, text: String) : Group() {
 
     var text: String = text
     var background: MainActor
+    lateinit var textView: TextButton
 
     init {
         // Create background image of button
         background = MainActor(texture)
-        setPosition(0F, 0F)
-        setBounds(this.x, this.y, background.width, background.height)
 
         //Creation of text for button
         var font = BitmapFont()
         var textButtonStyle = TextButton.TextButtonStyle()
         textButtonStyle.font = font
-        var text = TextButton(text, textButtonStyle)
-        var textX = (background.width - text.width) / 2
-        var textY = (background.height - text.height) / 2
-        text.setPosition(textX, textY)
+        textView = TextButton(text, textButtonStyle)
+        //Change size of Background
+        var persent = 1.3
+        background.setSize((textView.width * persent).toFloat(), (textView.height * persent).toFloat())
+        //Set text position on center of background
+        var textX = (background.width - textView.width) / 2
+        var textY = (background.height - textView.height) / 2
+        textView.setPosition(textX, textY)
 
         addActor(background)
-        addActor(text)
+        addActor(textView)
+
+        setBounds(this.x, this.y, background.width, background.height)
 
     }
 

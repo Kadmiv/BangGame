@@ -24,8 +24,13 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
 
     lateinit var firstStartButton: Button
     lateinit var secondStartButton: Button
+
+    lateinit var firstScore: Button
+    lateinit var secondScore: Button
+
     lateinit var newGameButton: Button
     lateinit var exitButton: Button
+
     var timer = RandomTimer.Factory.instance()!!
 
     init {
@@ -65,10 +70,28 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
 
         // Add Start second player button
         secondStartButton = Button(RuntimeRepo.textureRepo["button"]!!, "Start")
-        secondStartButton.setOrigin(Align.center)
         secondStartButton.setToCentre(secondPlayerField.width / 2, screenHeight - secondPlayerField.height / 4)
+        secondStartButton.setOrigin(Align.center)
         secondStartButton.rotation = 180F
         mainStage.addActor(secondStartButton)
+
+        // Create "New game" button
+        newGameButton = Button(RuntimeRepo.textureRepo["button"]!!, "New Game")
+        newGameButton.setToCentre(screenWidth - firstPlayerField.width / 4, firstPlayerField.height / 2)
+
+        // Create "Exit" button
+        exitButton = Button(RuntimeRepo.textureRepo["button"]!!, "Exit")
+        exitButton.setToCentre(secondPlayerField.width / 4, secondPlayerField.height / 2)
+
+        // Create first player score info panel
+        firstScore = Button(RuntimeRepo.textureRepo["button"]!!, "5")
+        firstScore.setToCentre(firstPlayerField.width - firstScore.width, screenHeight / 2)
+
+        // Create second player score info panel
+        secondScore = Button(RuntimeRepo.textureRepo["button"]!!, "5")
+        secondScore.setToCentre(secondPlayerField.x + secondScore.width, screenHeight / 2)
+        secondScore.setOrigin(Align.center)
+        secondScore.rotation = 180F
 
         // Initialization of game controller
         var controller = GameScreenController(this);
@@ -76,14 +99,6 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
         mainStage.addListener(controller)
         Gdx.input.inputProcessor = mainStage
         Gdx.input.isCatchBackKey = true;
-
-        // Add Start first player button
-        newGameButton = Button(RuntimeRepo.textureRepo["button"]!!, "New Game")
-        newGameButton.setToCentre(screenWidth - firstPlayerField.width / 4, firstPlayerField.height / 2)
-
-        // Add Start second player button
-        exitButton = Button(RuntimeRepo.textureRepo["button"]!!, "Exit")
-        exitButton.setToCentre(secondPlayerField.width / 4, secondPlayerField.height / 2)
 
     }
 
@@ -102,6 +117,5 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
     override fun resize(width: Int, height: Int) {}
     override fun hide() {}
     override fun show() {}
-
 
 }

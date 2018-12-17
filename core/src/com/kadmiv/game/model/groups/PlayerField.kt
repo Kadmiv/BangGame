@@ -102,68 +102,74 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
 
     // gameWasStart - needed so that the touchscreen does not react between battles
     fun getShoot(anotherPlayerField: PlayerField, gameWasStart: Boolean) {
-        var anotherPlayer = anotherPlayerField.player
-        if (haveBullet && gameWasStart) {
 
-            var randomN: Int = Math.ceil(Math.random() * 4).toInt()
-            haveBullet = false;
-            if (!mayShoot) {
-                // Get Shoot effects
-                GameScreenController.playSound(RuntimeRepo.audioRepo["bullet_$randomN"]!!);
-                player.toNextAnimation(RuntimeRepo.getAnimation(player, "shoot"))
-                sleep(2)
-                anotherPlayerField.addBulletDot()
-                if (anotherPlayerField.haveBullet) {
-                    player.toNextAnimation(RuntimeRepo.getAnimation(player, "coward_1"))
-                    player.toNextAnimation(RuntimeRepo.getAnimation(player, "coward_2"), Animation.PlayMode.LOOP)
+        var anotherPlayer = anotherPlayerField.player
+        if (!haveBullet || !gameWasStart)
+            return
+
+        var randomN: Int = Math.ceil(Math.random() * 4).toInt()
+        haveBullet = false;
+
+        // Get Shoot effects
+        GameScreenController.playSound(RuntimeRepo.audioRepo["bullet_$randomN"]!!);
+        player.toNextAnimation(RuntimeRepo.getAnimation(player, "shoot"))
+
+        if (mayShoot) {
+            // Set time of touch
+            touch.finishTime = System.currentTimeMillis()
+
+            // Another player has not yet clicked on the screen
+            if (anotherPlayerField.touch.getTimeReaction() < 0) {
+                // Run animations
+                anotherPlayer.toNextAnimation(RuntimeRepo.getAnimation(player, "death_$randomN"))
+                player.toNextAnimation(RuntimeRepo.getAnimation(player, "win_round"))
+                // Run sounds
+                GameScreenController.playSound(RuntimeRepo.audioRepo["death_$randomN"]!!);
+                // Increment wins
+                playerScore++
+
+                // Restore bullet
+                haveBullet = true
+                anotherPlayerField.haveBullet = true
+
+                if (MAX_WIN_NUM == playerScore) {
+                    GameScreenController.playSound(RuntimeRepo.audioRepo["win_all_$randomN"]!!);
+                    randomN = Math.ceil(Math.random() * 2).toInt()
+                    var winAnimation = RuntimeRepo.getAnimation(player, "win_all_$randomN")
+                    player.toNextAnimation(winAnimation, Animation.PlayMode.LOOP)
+
+                    // To Start menu
+                    Thread(Runnable {
+                        sleep(4000)
+                        roundCallBack.getNewGame()
+                    }).start()
 
                 } else {
-                    player.toNextAnimation(RuntimeRepo.getAnimation(player, "missed_too"), Animation.PlayMode.LOOP)
-                    anotherPlayer.animation = RuntimeRepo.getAnimation(player, "nothing_happened")
-                    timer.stop()
-                }
-            } else {
-                // Set time of touch
-                touch.finishTime = System.currentTimeMillis()
-
-                if (!this.isDeath) {
-                    // Get Shoot effects
-                    GameScreenController.playSound(RuntimeRepo.audioRepo["bullet_$randomN"]!!);
-                    player.toNextAnimation(RuntimeRepo.getAnimation(player, "shoot"))
-
-                    // Another player has not yet clicked on the screen
-                    if (anotherPlayerField.touch.getTimeReaction() < 0) {
-                        anotherPlayerField.isDeath = true
-                        // Run animations
-                        anotherPlayer.toNextAnimation(RuntimeRepo.getAnimation(player, "death_$randomN"))
-                        player.toNextAnimation(RuntimeRepo.getAnimation(player, "win_round"))
-                        // Run sounds
-                        GameScreenController.playSound(RuntimeRepo.audioRepo["death_$randomN"]!!);
-                        // Increment wins
-                        playerScore++
-                    }
-
+                    roundCallBack.getNextRound()
                 }
             }
 
-            // Run animation and sound, if player to win in all 5 battles
-            if (MAX_WIN_NUM == playerScore) {
-                sleep(250)
-                GameScreenController.playSound(RuntimeRepo.audioRepo["win_all_$randomN"]!!);
-                randomN = Math.ceil(Math.random() * 2).toInt()
-                var winAnimation = RuntimeRepo.getAnimation(player, "win_all_$randomN")
-                player.toNextAnimation(winAnimation, Animation.PlayMode.LOOP)
+        } else {
+            //If the player shot earlier than necessary
+            sleep(5)
+            anotherPlayerField.addBulletDot()
+            if (anotherPlayerField.haveBullet) {
+                player.toNextAnimation(RuntimeRepo.getAnimation(player, "coward_1"))
+                player.toNextAnimation(RuntimeRepo.getAnimation(player, "coward_2"), Animation.PlayMode.LOOP)
 
-                // To Start menu
-                Thread(Runnable {
-                    sleep(4000)
-                    roundCallBack.getNewGame()
-                }).start()
-
-            }else{
+            }
+            // If another player shot earlier than necessary too
+            else {
+                player.toNextAnimation(RuntimeRepo.getAnimation(player, "missed_too"), Animation.PlayMode.LOOP)
+                anotherPlayer.animation = RuntimeRepo.getAnimation(player, "nothing_happened")
+                timer.stop()
+                // Restore bullet
+                haveBullet = true
+                anotherPlayerField.haveBullet = true
                 roundCallBack.getNextRound()
             }
         }
+
     }
 
 

@@ -5,7 +5,6 @@ import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.scenes.scene2d.*
 import com.kadmiv.game.model.RuntimeRepo
 import com.kadmiv.game.model.actors.Button
-import com.kadmiv.game.model.groups.PlayerField
 import com.kadmiv.game.model.groups.PlayerField.RoundCallBack
 import com.kadmiv.game.screens.GameScreen
 import com.kadmiv.game.screens.StartScreen
@@ -43,10 +42,10 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
         when (battleFieldPart) {
             //Player touch *Ready button*
             screen.firstStartButton -> {
-                deleteButton(screen.firstStartButton)
+                deletePart(screen.firstStartButton)
             }
             screen.secondStartButton -> {
-                deleteButton(screen.secondStartButton)
+                deletePart(screen.secondStartButton)
             }
             screen.exitButton -> {
                 exitFromGame()
@@ -69,27 +68,20 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
         return true
     }
 
-    private fun deleteButton(button: Button) {
+    private fun deletePart(part: Actor) {
 
-        button.remove()
+        part.remove()
 
-        when (button) {
+        when (part) {
             screen.firstStartButton -> {
                 screen.firstPlayerField.playerStart()
                 GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
-                // For just case - I have some bug with this
-                screen.firstPlayerField.haveBullet = true
-                screen.secondPlayerField.haveBullet = true
                 getStart()
 
             }
             screen.secondStartButton -> {
                 screen.secondPlayerField.playerStart()
                 GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
-
-                // For just case - I have some bug with this
-                screen.firstPlayerField.haveBullet = true
-                screen.secondPlayerField.haveBullet = true
                 getStart()
             }
         }
@@ -98,27 +90,19 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
 
     private fun getStart() {
         playersReady++
-        if (playersReady >= playersCount)
+        if (playersReady >= playersCount) {
             timer.start()
+            if (screen.firstScore.isVisible) {
+                hideScore()
+            }
+        }
     }
 
-    fun keyDown(keycode: Int): Boolean {
+    override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
         if (keycode == Input.Keys.BACK) {
             System.out.println("Is Back Button Pressed")
         }
         return false
-    }
-
-    override fun ready() {
-        playSound(RuntimeRepo.audioRepo["ready"]!!);
-    }
-
-    override fun steady() {
-        playSound(RuntimeRepo.audioRepo["steady"]!!);
-    }
-
-    override fun bang() {
-        playSound(RuntimeRepo.audioRepo["finish_him"]!!);
     }
 
     override fun getNextRound() {
@@ -128,9 +112,24 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
             sleep(2000)
             screen.mainStage.addActor(screen.secondStartButton)
             screen.mainStage.addActor(screen.firstStartButton)
+            showScore()
         }).start()
         playersReady = 0
 
+    }
+
+    private fun showScore() {
+        val p1Score = screen.firstPlayerField.playerScore.toString()
+        screen.firstScore.textView.setText(p1Score)
+        val p2Score = screen.secondPlayerField.playerScore.toString()
+        screen.secondScore.textView.setText(p2Score)
+        screen.mainStage.addActor(screen.firstScore)
+        screen.mainStage.addActor(screen.secondScore)
+    }
+
+    private fun hideScore() {
+        deletePart(screen.firstScore)
+        deletePart(screen.secondScore)
     }
 
     override fun getNewGame() {
@@ -144,7 +143,7 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
         GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
         screen.dispose()
         var startScreen = GameScreen(screen.game, playersCount)
-        screen.game.setScreen(startScreen);
+        screen.game.screen = startScreen;
         System.out.println("Start screen screen created ")
     }
 
@@ -154,6 +153,18 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
         var startScreen = StartScreen(screen.game)
         screen.game.setScreen(startScreen);
         System.out.println("Start screen screen created ")
+    }
+
+    override fun ready() {
+        playSound(RuntimeRepo.audioRepo["ready"]!!);
+    }
+
+    override fun steady() {
+        playSound(RuntimeRepo.audioRepo["steady"]!!);
+    }
+
+    override fun bang() {
+        playSound(RuntimeRepo.audioRepo["finish_him"]!!);
     }
 
 }
