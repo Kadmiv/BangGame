@@ -20,10 +20,11 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
     lateinit var touch: PlayerTouch
     var isDeath = false
     var playerScore = 0
-    val MAX_WIN_NUM = 5
+    val MAX_WIN_NUM = 2
 
     open interface RoundCallBack {
         fun getNextRound(score: Int, player: PlayerField)
+        fun getNewGame()
     }
 
     lateinit var roundCallBack: RoundCallBack
@@ -87,19 +88,20 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
     }
 
     fun playerStart() {
-        haveBullet = true
+        mayShoot = false;
         // Set player settings
         var animation = RuntimeRepo.getAnimation(Player.ANIM_WIDTH, Player.ANIM_HEIGHT, "ready")
         player.animation = animation
         player.setRun(true)
     }
 
+    // gameWasStart - needed so that the touchscreen does not react between battles
     fun getShoot(anotherPlayerField: PlayerField, gameWasStart: Boolean) {
         var anotherPlayer = anotherPlayerField.player
         if (haveBullet && gameWasStart) {
 
             var randomN: Int = Math.ceil(Math.random() * 4).toInt()
-
+            haveBullet = false;
             if (!mayShoot) {
                 // Get Shoot effects
                 GameScreenController.playSound(RuntimeRepo.audioRepo["bullet_$randomN"]!!);
@@ -124,7 +126,7 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                     // Get Shoot effects
                     GameScreenController.playSound(RuntimeRepo.audioRepo["bullet_$randomN"]!!);
                     player.toNextAnimation(RuntimeRepo.getAnimation(player, "shoot"))
-                    sleep(3)
+
                     // Another player has not yet clicked on the screen
                     if (anotherPlayerField.touch.getTimeReaction() < 0) {
                         anotherPlayerField.isDeath = true
@@ -147,13 +149,17 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                 randomN = Math.ceil(Math.random() * 2).toInt()
                 var winAnimation = RuntimeRepo.getAnimation(player, "win_all_$randomN")
                 player.toNextAnimation(winAnimation, Animation.PlayMode.LOOP)
+
+                // To Start menu
+                Thread(Runnable {
+                    sleep(4000)
+                    roundCallBack.getNewGame()
+                }).start()
             }
-            haveBullet = false;
         }
     }
 
     override fun ready() {
-        mayShoot = false;
         System.out.println("Say ready")
     }
 

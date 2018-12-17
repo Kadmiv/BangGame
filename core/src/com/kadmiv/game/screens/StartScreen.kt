@@ -40,7 +40,6 @@ class StartScreen(game: Game) : InputAdapter(), Screen {
         startButton.addListener(object : InputListener() {
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: Int): Boolean {
                 dispose()
-
                 var gameScreen = GameScreen(game, 2)
                 game.setScreen(gameScreen);
                 System.out.println("Game screen created ")
@@ -70,6 +69,7 @@ class StartScreen(game: Game) : InputAdapter(), Screen {
 
     override fun dispose() {
         Gdx.input.inputProcessor = null
+        mainStage.dispose()
     }
 
     override fun pause() {}

@@ -13,7 +13,6 @@ class MainClass : Game() {
         val HEIGHT = 800
         val TITLE = "Bang Game"
         var startScreen: Screen? = null
-        var gameScreen: Screen? = null
     }
 
     override fun create() {

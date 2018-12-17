@@ -17,8 +17,8 @@ import com.kadmiv.game.model.groups.PlayerField
 
 class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
 
+    var game = game
     lateinit var mainStage: Stage
-
     lateinit var firstPlayerField: PlayerField
     lateinit var secondPlayerField: PlayerField
     lateinit var firstStartButton: Button
@@ -83,8 +83,8 @@ class GameScreen(game: Game, countPlayer: Int) : InputAdapter(), Screen {
     }
 
     override fun dispose() {
-        Gdx.input.inputProcessor = null
         mainStage.dispose()
+        Gdx.input.inputProcessor = null
     }
 
     override fun pause() {}

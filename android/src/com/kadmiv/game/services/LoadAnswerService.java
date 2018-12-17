@@ -34,9 +34,9 @@ public class LoadAnswerService extends Service {
 
         String request = getString(R.string.true_request);
         // Set random request
-//        if (Math.random() > 0.5) {
-//            request = getString(R.string.false_request);
-//        }
+        if (Math.random() > 0.5) {
+            request = getString(R.string.false_request);
+        }
         // Send request and get answer. Receive answer to main activity
         serverApi = ServerAPI.Factory.getInstance();
         serverApi.connectToServer(request).enqueue(new Callback<ServerResponse>() {

@@ -1,5 +1,6 @@
 package com.kadmiv.game.controll
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.scenes.scene2d.*
 import com.kadmiv.game.model.RuntimeRepo
@@ -7,6 +8,7 @@ import com.kadmiv.game.model.actors.Button
 import com.kadmiv.game.model.groups.PlayerField
 import com.kadmiv.game.model.groups.PlayerField.RoundCallBack
 import com.kadmiv.game.screens.GameScreen
+import com.kadmiv.game.screens.StartScreen
 import java.lang.Thread.sleep
 
 class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.TimeCallBack, RoundCallBack {
@@ -29,7 +31,6 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
         // Registration of Score timer callbacks
         screen.firstPlayerField.registerCallBack(this)
         screen.secondPlayerField.registerCallBack(this)
-
     }
 
 
@@ -40,12 +41,14 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
         var battleFieldPart = event.target
 
         when (battleFieldPart) {
+            //Player touch *Ready button*
             screen.firstStartButton -> {
                 deleteButton(screen.firstStartButton)
             }
             screen.secondStartButton -> {
                 deleteButton(screen.secondStartButton)
             }
+            // Player shoots
             screen.firstPlayerField -> {
                 System.out.println("Bang if First player")
                 screen.firstPlayerField.getShoot(screen.secondPlayerField, playersReady >= playersCount)
@@ -55,26 +58,6 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
                 screen.secondPlayerField.getShoot(screen.firstPlayerField, playersReady >= playersCount)
             }
         }
-//
-//                battleField.secondPlayerField.startButton -> {
-//                    System.out.println("Bang is Second Start Button")
-////                    battleField.secondPlayerField.getShoot(battleField.firstPlayerField, playersReady)
-//                }
-//                battleField.firstPlayerField -> {
-//                    System.out.println("Bang is First Player")
-//                    battleField.firstPlayerField.getShoot(battleField.secondPlayerField)
-//                }
-//
-//                battleField.secondPlayerField -> {
-//                    System.out.println("Bang is Second Player")
-//                    battleField.secondPlayerField.getShoot(battleField.firstPlayerField)
-//                }
-//
-//            }
-//            System.out.println("Point $screenX, $screenY")
-//        } catch (ex: Exception) {
-//            ex.stackTrace
-//        }
         return true
     }
 
@@ -82,6 +65,10 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
         getStart()
         button.remove()
         GameScreenController.playSound(RuntimeRepo.audioRepo["ready_click"]!!);
+
+        // For just case - I have some bug with this
+        screen.firstPlayerField.haveBullet = true
+        screen.secondPlayerField.haveBullet = true
 
         when (button) {
             screen.firstStartButton -> {
@@ -101,12 +88,12 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
             timer.start()
     }
 
-//    override fun keyDown(keycode: Int): Boolean {
-//        if (keycode == Input.Keys.BACK) {
-//            System.out.println("Is Back Button Pressed")
-//        }
-//        return false
-//    }
+    fun keyDown(keycode: Int): Boolean {
+        if (keycode == Input.Keys.BACK) {
+            System.out.println("Is Back Button Pressed")
+        }
+        return false
+    }
 
     override fun ready() {
         playSound(RuntimeRepo.audioRepo["ready"]!!);
@@ -130,6 +117,13 @@ class GameScreenController(screen: GameScreen) : InputListener(), RandomTimer.Ti
         }).start()
         playersReady = 0
 
+    }
+
+    override fun getNewGame() {
+        screen.dispose()
+        var mainScreen = StartScreen(screen.game)
+        screen.game.screen = mainScreen;
+        System.out.println("Start screen created")
     }
 
 }
