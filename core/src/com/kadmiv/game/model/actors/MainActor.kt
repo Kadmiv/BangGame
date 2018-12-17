@@ -1,18 +1,16 @@
-package com.kadmiv.game.actors
+package com.kadmiv.game.model.actors
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 
-open class MainActor(texturePNG: String) : Actor() {
-    open var texture: Texture = Texture(texturePNG)
-    var textureRegion = TextureRegion(texture)
+open class MainActor(texture: Texture) : Actor() {
+    lateinit var textureRegion: TextureRegion
 
     init {
-        width = texture.width.toFloat()
-        height = texture.height.toFloat()
+        setSize(texture.width.toFloat(), texture.height.toFloat())
+        textureRegion = TextureRegion(texture)
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {

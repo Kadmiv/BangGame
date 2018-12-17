@@ -6,7 +6,7 @@
  * Written by Mirco Timmermann <mtimmermann@gmx.de>, December 2015
  *
  *******************************************************/
-package com.kadmiv.game.actors;
+package com.kadmiv.game.model.actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -52,7 +52,7 @@ public class AnimatedActor extends Actor {
 
     public void setAnimation(Animation<TextureRegion> animation) {
         _animation = animation;
-
+        _stateTime = 0;
         if (_animation != null) {
             if (_autoSizeAdjust) {
                 this.setWidth(animation.getKeyFrame(0).getRegionWidth());
@@ -70,7 +70,11 @@ public class AnimatedActor extends Actor {
         }
     }
 
-    public void playAfter(Animation<TextureRegion> animation) {
+    public void toNextAnimation(Animation<TextureRegion> animation) {
+        toNextAnimation(animation, Animation.PlayMode.NORMAL);
+    }
+
+    public void toNextAnimation(Animation<TextureRegion> animation, Animation.PlayMode playMode) {
         Runnable isPlay;
         isPlay = () -> {
             while (!this.isAnimationFinished()) {
@@ -81,6 +85,7 @@ public class AnimatedActor extends Actor {
                 }
             }
             _stateTime = 0;
+            animation.setPlayMode(playMode);
             setAnimation(animation);
         };
         Thread additionThread = new Thread(isPlay);

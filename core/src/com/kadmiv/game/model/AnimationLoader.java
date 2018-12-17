@@ -1,4 +1,4 @@
-package com.kadmiv.game.actors;
+package com.kadmiv.game.model;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
