@@ -146,8 +146,7 @@ class PlayerField(x: Float, y: Float, width: Float, height: Float) : Group(), Ra
                 GameScreenController.playSound(RuntimeRepo.audioRepo["win_all_$randomN"]!!);
                 randomN = Math.ceil(Math.random() * 2).toInt()
                 var winAnimation = RuntimeRepo.getAnimation(player, "win_all_$randomN")
-                winAnimation.playMode = Animation.PlayMode.LOOP
-                player.toNextAnimation(winAnimation)
+                player.toNextAnimation(winAnimation, Animation.PlayMode.LOOP)
             }
             haveBullet = false;
         }
