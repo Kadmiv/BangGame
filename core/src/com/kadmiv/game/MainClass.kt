@@ -19,10 +19,8 @@ class MainClass : Game() {
     override fun create() {
         //Load game files to repo
         RuntimeRepo()
-        // Creation of game screens (activity)
+
         startScreen = StartScreen(this)
-        gameScreen = GameScreen(this, 2)
-//        setScreen(startScreen)
-        setScreen(gameScreen)
+        setScreen(startScreen)
     }
 }
