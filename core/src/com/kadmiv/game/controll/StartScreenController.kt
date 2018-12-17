@@ -8,6 +8,7 @@ import com.kadmiv.game.model.RuntimeRepo
 import com.kadmiv.game.screens.GameScreen
 import com.kadmiv.game.screens.StartScreen
 import io.reactivex.internal.disposables.DisposableHelper.dispose
+import kotlin.system.exitProcess
 
 class StartScreenController(screen: StartScreen) : InputListener() {
 
@@ -33,17 +34,25 @@ class StartScreenController(screen: StartScreen) : InputListener() {
                 screen.game.setScreen(gameScreen);
                 System.out.println("Game screen created ")
             }
+            screen.exitButton -> {
+                cloaseGame()
+            }
         }
         return true
     }
 
     override fun keyDown(event: InputEvent?, keycode: Int): Boolean {
         if (keycode == Input.Keys.BACK) {
-            screen.dispose()
-            Gdx.app.exit()
-            System.exit(0)
-            System.out.println("Back key pressed")
+            cloaseGame()
         }
         return false
+    }
+
+    private fun cloaseGame() {
+        screen.dispose()
+        Gdx.app.exit()
+        System.exit(0)
+        System.out.println("Back key pressed")
+        exitProcess(0)
     }
 }

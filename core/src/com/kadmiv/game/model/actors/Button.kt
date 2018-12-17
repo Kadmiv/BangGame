@@ -23,7 +23,7 @@ class Button(texture: Texture, text: String) : Group() {
         textButtonStyle.font = font
         textView = TextButton(text, textButtonStyle)
         //Change size of Background
-        var persent = 1.3
+        var persent = 1.6
         background.setSize((textView.width * persent).toFloat(), (textView.height * persent).toFloat())
         //Set text position on center of background
         var textX = (background.width - textView.width) / 2

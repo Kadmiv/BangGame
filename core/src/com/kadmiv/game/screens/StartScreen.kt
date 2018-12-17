@@ -13,9 +13,10 @@ import com.kadmiv.game.model.actors.Button
 
 class StartScreen(game: Game) : InputAdapter(), Screen {
 
-    var mainStage: Stage = Stage()
+    var mainStage: Stage
     var game = game
     lateinit var startButton: Button
+    lateinit var exitButton: Button
 
     var width = Gdx.graphics.width.toFloat()
     var height = Gdx.graphics.height.toFloat();
@@ -23,18 +24,27 @@ class StartScreen(game: Game) : InputAdapter(), Screen {
     init {
 
         var gameBackground = MainActor(RuntimeRepo.textureRepo["game_background"]!!)
-        mainStage.addActor(gameBackground)
-
         gameBackground.scaleX = width / gameBackground.width
         gameBackground.scaleY = height / gameBackground.height
 
+        mainStage = Stage()
+
+        // Create "Exit" button
+        exitButton = Button(RuntimeRepo.textureRepo["button"]!!, "Exit")
+        exitButton.setToCentre(width / 2 - exitButton.width, width / 2 - exitButton.height)
+        exitButton.touchable = Touchable.enabled
 
         // Add Start first player button
         startButton = Button(RuntimeRepo.textureRepo["button"]!!, "Let's GO")
         startButton.setOrigin(Align.center)
-        startButton.setToCentre(width / 2, height / 2)
-        mainStage.addActor(startButton)
+        startButton.setToCentre(width / 2, width / 2)
 
+        // Add actors
+        mainStage.addActor(gameBackground)
+        mainStage.addActor(startButton)
+//        mainStage.addActor(exitButton)
+
+        // Add input listener
         var controller = StartScreenController(this)
         startButton.addListener(controller)
         Gdx.input.inputProcessor = mainStage
